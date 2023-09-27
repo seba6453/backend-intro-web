@@ -44,6 +44,15 @@ export class AuthService {
       email: user.email
     };
   }
+  validateToken(token: string): boolean {
+    try {
+      // Verificar el token utilizando el JwtService
+      this.jwtService.verify(token);
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
 
   async recoveryPassword(email: string): Promise<any> {
     const newPassword = randomCaracter(9);

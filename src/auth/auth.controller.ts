@@ -1,4 +1,4 @@
-import { Body, Controller, Post, HttpCode, HttpStatus } from '@nestjs/common';
+import { Body, Controller, Post, HttpCode, HttpStatus, Get } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
 
@@ -22,5 +22,17 @@ export class AuthController {
   @Post('recovery')
   recovery(@Body() json: Record<string, any>) {
     return this.authService.recoveryPassword(json.email);
+  }
+
+  @Post('validate-token')
+  validateToken(@Body() { token }: { token: string }) {
+    // Lógica para validar el token aquí, por ejemplo, utilizando el servicio de autenticación
+    const isValid = this.authService.validateToken(token);
+
+    if (isValid) {
+      return { valid: true };
+    } else {
+      return { valid: false };
+    }
   }
 }
