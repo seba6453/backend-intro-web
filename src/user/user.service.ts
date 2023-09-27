@@ -8,7 +8,7 @@ export class UserService {
       userID: 1,
       userName: "kevin",
       password: "guess",
-      email: "jane.smith@example.com"
+      email: "sebastianastudillorojas@gmail.com"
     }
   ];
 
@@ -27,6 +27,13 @@ export class UserService {
     this.users.push(user);
 
      return user;
+  }
+
+  async forgotPassword(email: string, newPassword: string) {
+    var user = this.users.find(user => user.email === email);
+    user.password = newPassword;
+
+    return user.userName;
   }
 
 }

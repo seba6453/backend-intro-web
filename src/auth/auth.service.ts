@@ -3,6 +3,8 @@ import { UserService } from 'src/user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { User } from 'src/user/entities/user.entity';
+import { randomCaracter } from 'src/config/randomCaracter';
+import { transporter } from 'src/config/mailer';
 
 @Injectable()
 export class AuthService {
@@ -33,5 +35,38 @@ export class AuthService {
     return {
       access_token: await this.jwtService.signAsync(payload),
     };
+  }
+
+  async recoveryPassword(email: string): Promise<any> {
+    const newPassword = randomCaracter(9);
+    if(await this.userService.findOne(email) === undefined){
+      throw new UnauthorizedException();
+    }
+    const userName = await this.userService.forgotPassword(email,newPassword);
+
+    await transporter.sendMail({
+      from: '"Soporte" <soporte.erpan@gmail.com>', // sender address
+      to: email, // list of receivers
+      subject: "Recuperacion de contraseña", // Subject line
+      text: "Hello world?", // plain text body
+      html: `
+        <h1>Restablecer contraseña</h1>
+        <div>
+            <h3>Hola ${userName}</h3>
+            <p>Tu contraseña provisoria es:</p>
+        </div>
+        <h3>${newPassword}</h3>
+        <div>
+            <p>Luego de ingresar, realiza el cambio de tu contraseña</p>
+        <div>
+        <div>
+            <h4>¿Tienes preguntas?</h4>
+            <p>Contactarse a soporte.erpan@gmail.com</p>
+        <div>
+        `,
+    });
+
+    return {Mensaje:"Revice su correo"}
+
   }
 }

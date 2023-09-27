@@ -17,4 +17,10 @@ export class AuthController {
   register(@Body() registerDTO: CreateUserDto) {
     return this.authService.register(registerDTO);
   }
+
+  @HttpCode(HttpStatus.ACCEPTED)
+  @Post('recovery')
+  recovery(@Body() json: Record<string, any>) {
+    return this.authService.recoveryPassword(json.email);
+  }
 }
