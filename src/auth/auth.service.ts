@@ -17,13 +17,18 @@ export class AuthService {
     const user = await this.userService.findOne(email);
 
     if(user?.password !== pass){
-      throw new UnauthorizedException();
+      return {
+        message: "Contraseña incorrecta",
+        statusCode: 401
+      }
     }
 
     const payload = { sub: user.userID, username: user.userName };
 
     return {
       access_token: await this.jwtService.signAsync(payload),
+      userName: user.userName,
+      email: user.email
     };
   }
 
@@ -34,6 +39,8 @@ export class AuthService {
 
     return {
       access_token: await this.jwtService.signAsync(payload),
+      userName: user.userName,
+      email: user.email
     };
   }
 
@@ -66,7 +73,10 @@ export class AuthService {
         `,
     });
 
-    return {Mensaje:"Revice su correo"}
+    return {
+      message:"contraseña enviada",
+      statusCode: 201
+    }
 
   }
 }
