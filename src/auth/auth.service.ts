@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException  } from '@nestjs/common';
+import { BadRequestException, Injectable, UnauthorizedException  } from '@nestjs/common';
 import { UserService } from 'src/user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
@@ -17,18 +17,19 @@ export class AuthService {
     const user = await this.userService.findOne(email);
 
     if(user?.password !== pass){
-      return {
-        message: "Contraseña incorrecta",
-        statusCode: 401
-      }
+      const errorMessage = "Contraseña incorrecta"
+      throw new BadRequestException(errorMessage, { cause: new Error(), description: 'Some error description' })
     }
 
     const payload = { sub: user.userID, username: user.userName };
+    const userData = {
+      username: user.userName,
+      email: user.email
+    };
 
     return {
       access_token: await this.jwtService.signAsync(payload),
-      userName: user.userName,
-      email: user.email
+      userData: userData
     };
   }
 
