@@ -20,7 +20,22 @@ export class UserService {
   }
 
   async forgotPassword(email: string, newPassword: string) {
-    return await this.userModel.findOneAndUpdate({email},{newPassword})
+    // Buscar al usuario por su dirección de correo electrónico
+    const user = await this.userModel.findOne({ email });
+  
+    if (!user) {
+      // Manejar el caso en el que el usuario no existe
+      throw new Error('Usuario no encontrado');
+    }
+  
+    // Actualizar la contraseña del usuario
+    user.password = newPassword;
+  
+    // Guardar los cambios en la base de datos
+    await user.save();
+  
+    // Retornar al usuario actualizado
+    return user;
   }
 
 }

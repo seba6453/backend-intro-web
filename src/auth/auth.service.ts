@@ -66,7 +66,7 @@ export class AuthService {
     if(await this.userService.findOne(email) === undefined){
       throw new UnauthorizedException();
     }
-    const userName = await this.userService.forgotPassword(email,newPassword);
+    const user = await this.userService.forgotPassword(email,newPassword);
 
     await transporter.sendMail({
       from: '"Soporte" <soporte.erpan@gmail.com>', // sender address
@@ -76,7 +76,7 @@ export class AuthService {
       html: `
         <h1>Restablecer contraseña</h1>
         <div>
-            <h3>Hola ${userName}</h3>
+            <h3>Hola ${user.userName}</h3>
             <p>Tu contraseña provisoria es:</p>
         </div>
         <h3>${newPassword}</h3>
