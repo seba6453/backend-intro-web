@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, UnauthorizedException  } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable  } from '@nestjs/common';
 import { UserService } from 'src/user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
@@ -15,13 +15,10 @@ export class AuthService {
     ) {};
 
   async signIn(login: CreateAuthDto): Promise<any> {
-    console.log(login)
     const user = await this.userService.findOne(login.email);
-    console.log(user)
 
     if(user?.password !== login.password){
-      const errorMessage = "Contraseña incorrecta"
-      throw new BadRequestException(errorMessage, { cause: new Error(), description: 'Some error description' })
+      throw new HttpException('No autorizado', HttpStatus.UNAUTHORIZED);
     }
 
     const payload = { sub: user.userID, username: user.userName };
@@ -37,10 +34,6 @@ export class AuthService {
   }
 
   async register(newUser: CreateUserDto): Promise<any> {
-    if(newUser.userName === undefined){
-      const errorMessage = "Contraseña incorrecta"
-      throw new BadRequestException(errorMessage, { cause: new Error(), description: 'Some error description' })
-    }
     const user: User = await this.userService.createUser(newUser);
 
     const payload = { sub: user.userID, username: user.userName };
@@ -63,10 +56,12 @@ export class AuthService {
 
   async recoveryPassword(email: string): Promise<any> {
     const newPassword = randomCaracter(9);
-    if(await this.userService.findOne(email) === undefined){
-      throw new UnauthorizedException();
+    let user: User;
+    try {
+      user = await this.userService.forgotPassword(email,newPassword);
+    }catch{
+      throw new HttpException('No autorizado', HttpStatus.UNAUTHORIZED);
     }
-    const user = await this.userService.forgotPassword(email,newPassword);
 
     await transporter.sendMail({
       from: '"Soporte" <soporte.erpan@gmail.com>', // sender address
