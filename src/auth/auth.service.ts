@@ -5,6 +5,7 @@ import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { User } from 'src/user/entities/user.entity';
 import { randomCaracter } from 'src/config/randomCaracter';
 import { transporter } from 'src/config/mailer';
+import { CreateAuthDto } from './dto/create-auth.dto';
 
 @Injectable()
 export class AuthService {
@@ -13,10 +14,12 @@ export class AuthService {
     private jwtService: JwtService
     ) {};
 
-  async signIn(email: string, pass: string): Promise<any> {
-    const user = await this.userService.findOne(email);
+  async signIn(login: CreateAuthDto): Promise<any> {
+    console.log(login)
+    const user = await this.userService.findOne(login.email);
+    console.log(user)
 
-    if(user?.password !== pass){
+    if(user?.password !== login.password){
       const errorMessage = "Contraseña incorrecta"
       throw new BadRequestException(errorMessage, { cause: new Error(), description: 'Some error description' })
     }
@@ -34,6 +37,10 @@ export class AuthService {
   }
 
   async register(newUser: CreateUserDto): Promise<any> {
+    if(newUser.userName === undefined){
+      const errorMessage = "Contraseña incorrecta"
+      throw new BadRequestException(errorMessage, { cause: new Error(), description: 'Some error description' })
+    }
     const user: User = await this.userService.createUser(newUser);
 
     const payload = { sub: user.userID, username: user.userName };

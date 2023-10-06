@@ -1,39 +1,26 @@
 import { Injectable } from '@nestjs/common';
-import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
+import { Model } from 'mongoose';
+import { InjectModel } from '@nestjs/mongoose';
+import { User } from '../schema/user.schema';
+
+
 @Injectable()
 export class UserService {
-  private users: User[] = [
-    {
-      userID: 1,
-      userName: "kevin",
-      password: "guess",
-      email: "sebastianastudillorojas@gmail.com"
-    }
-  ];
+  constructor(@InjectModel(User.name) private readonly userModel: Model<User>) {}
+
 
   async findOne(email: string) {
-    return this.users.find(user => user.email === email);
+    return await this.userModel.findOne( {email});
   }
 
   async createUser(newUser: CreateUserDto) {
-    const user = {
-      userID: 2,
-      userName: newUser.userName,
-      password: newUser.password,
-      email: newUser.email
-    };
-
-    this.users.push(user);
-
-     return user;
+    const createdCat = await this.userModel.create(newUser);
+    return createdCat;
   }
 
   async forgotPassword(email: string, newPassword: string) {
-    var user = this.users.find(user => user.email === email);
-    user.password = newPassword;
-
-    return user.userName;
+    return await this.userModel.findOneAndUpdate({email},{newPassword})
   }
 
 }
