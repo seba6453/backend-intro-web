@@ -2,6 +2,7 @@ import { Body, Controller, Post, HttpCode, HttpStatus, Get } from '@nestjs/commo
 import { AuthService } from './auth.service';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { CreateAuthDto } from './dto/create-auth.dto';
+import { UpdateAuthDto } from './dto/update-auth.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -21,7 +22,7 @@ export class AuthController {
 
   @HttpCode(HttpStatus.ACCEPTED)
   @Post('recovery')
-  recovery(@Body() json: Record<string, any>) {
+  recovery(@Body() json: UpdateAuthDto) {
     return this.authService.recoveryPassword(json.email);
   }
 
