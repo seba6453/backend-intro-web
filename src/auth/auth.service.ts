@@ -6,6 +6,8 @@ import { User } from 'src/user/entities/user.entity';
 import { randomCaracter } from 'src/config/randomCaracter';
 import { transporter } from 'src/config/mailer';
 import { CreateAuthDto } from './dto/create-auth.dto';
+import * as bcrypt from 'bcrypt';
+import { comparePasswords, hashPassword } from 'src/config/enctypt';
 
 @Injectable()
 export class AuthService {
@@ -17,11 +19,11 @@ export class AuthService {
   async signIn(login: CreateAuthDto): Promise<any> {
     const user = await this.userService.findOne(login.email);
 
-    if(user?.password !== login.password){
+    if(!await comparePasswords(login.password,user?.password)){
       throw new HttpException('No autorizado', HttpStatus.UNAUTHORIZED);
     }
 
-    const payload = { sub: user.userID, username: user.userName };
+    const payload = { sub: user.userID, username: user.userName, email: user.email };
     const userData = {
       username: user.userName,
       email: user.email
@@ -34,9 +36,11 @@ export class AuthService {
   }
 
   async register(newUser: CreateUserDto): Promise<any> {
+    newUser.password = await hashPassword(newUser.password);
+    console.log(newUser);
     const user: User = await this.userService.createUser(newUser);
 
-    const payload = { sub: user.userID, username: user.userName };
+    const payload = { sub: user.userID, username: user.userName, email: user.email };
 
     return {
       access_token: await this.jwtService.signAsync(payload),
