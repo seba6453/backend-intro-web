@@ -23,6 +23,14 @@ export class UserService {
     }
     return user;
   }
+  
+  async findOneLogin(email: string) {
+    const user = await this.userModel.findOne({ email });
+    if (!user) {
+      throw new HttpException('Usuario no existe en el sistema', HttpStatus.NOT_ACCEPTABLE);
+    }
+    return user;
+  }
 
   async createUser(newUser: CreateUserDto) {
     const createdCat = await this.userModel.create(newUser);

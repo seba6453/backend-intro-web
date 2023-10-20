@@ -17,7 +17,7 @@ export class AuthService {
     ) {};
 
   async signIn(login: CreateAuthDto): Promise<any> {
-    const user = await this.userService.findOne(login.email);
+    const user = await this.userService.findOneLogin(login.email);
 
     if(!await comparePasswords(login.password,user?.password)){
       throw new HttpException('No autorizado', HttpStatus.UNAUTHORIZED);
