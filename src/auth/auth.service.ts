@@ -24,14 +24,10 @@ export class AuthService {
     }
 
     const payload = { sub: user.userID, username: user.userName, email: user.email };
-    const userData = {
-      username: user.userName,
-      email: user.email
-    };
-
     return {
       access_token: await this.jwtService.signAsync(payload),
-      userData: userData
+      userName: user.userName,
+      email: user.email
     };
   }
 

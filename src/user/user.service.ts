@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
@@ -17,7 +17,11 @@ export class UserService {
 
 
   async findOne(email: string) {
-    return await this.userModel.findOne( {email});
+    const user = await this.userModel.findOne({ email }, 'userName email');
+    if (!user) {
+      throw new HttpException('Usuario no existe en el sistema', HttpStatus.NOT_ACCEPTABLE);
+    }
+    return user;
   }
 
   async createUser(newUser: CreateUserDto) {
