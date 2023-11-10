@@ -6,7 +6,6 @@ import { User } from 'src/user/entities/user.entity';
 import { randomCaracter } from 'src/config/randomCaracter';
 import { transporter } from 'src/config/mailer';
 import { CreateAuthDto } from './dto/create-auth.dto';
-import * as bcrypt from 'bcrypt';
 import { comparePasswords, hashPassword } from 'src/config/enctypt';
 
 @Injectable()

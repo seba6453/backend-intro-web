@@ -33,6 +33,7 @@ export class UserService {
   }
 
   async createUser(newUser: CreateUserDto) {
+    newUser.password = await hashPassword(newUser.password);
     const createdCat = await this.userModel.create(newUser);
     return createdCat;
   }
@@ -47,6 +48,7 @@ export class UserService {
     }
   
     // Actualizar la contraseña del usuario
+    newPassword = await hashPassword(newPassword);
     user.password = newPassword;
   
     // Guardar los cambios en la base de datos
