@@ -6,7 +6,9 @@ import { User } from 'src/user/entities/user.entity';
 import { randomCaracter } from 'src/config/randomCaracter';
 import { transporter } from 'src/config/mailer';
 import { CreateAuthDto } from './dto/create-auth.dto';
-import { comparePasswords, hashPassword } from 'src/config/enctypt';
+import { comparePasswords } from 'src/config/enctypt';
+import { Auth } from './entities/auth.entity';
+import { ResponseAPI } from './entities/response.entity';
 
 @Injectable()
 export class AuthService {
@@ -15,7 +17,7 @@ export class AuthService {
     private jwtService: JwtService
     ) {};
 
-  async signIn(login: CreateAuthDto): Promise<any> {
+  async signIn(login: CreateAuthDto): Promise<Auth> {
     const user = await this.userService.findOneLogin(login.email);
 
     if(!await comparePasswords(login.password,user?.password)){
@@ -30,7 +32,7 @@ export class AuthService {
     };
   }
 
-  async register(newUser: CreateUserDto): Promise<any> {
+  async register(newUser: CreateUserDto): Promise<Auth> {
     const user: User = await this.userService.createUser(newUser);
 
     const payload = { sub: user.userID, username: user.userName, email: user.email };
@@ -51,15 +53,15 @@ export class AuthService {
     }
   }
 
-  async recoveryPassword(email: string): Promise<any> {
-    const newPassword = randomCaracter(9);
+  async recoveryPassword(email: string): Promise<ResponseAPI> {
+    const newPassword: string = randomCaracter(9);
     let user: User;
     try {
       user = await this.userService.forgotPassword(email,newPassword);
     }catch{
       throw new HttpException('No autorizado', HttpStatus.UNAUTHORIZED);
     }
-
+    
     await transporter.sendMail({
       from: '"Soporte" <soporte.erpan@gmail.com>', // sender address
       to: email, // list of receivers
@@ -83,9 +85,8 @@ export class AuthService {
     });
 
     return {
-      message:"contraseña enviada",
-      statusCode: 201
+      message: "contraseña enviada",
+      statusCode: HttpStatus.ACCEPTED
     }
-
   }
 }

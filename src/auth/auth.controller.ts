@@ -3,6 +3,8 @@ import { AuthService } from './auth.service';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { CreateAuthDto } from './dto/create-auth.dto';
 import { UpdateAuthDto } from './dto/update-auth.dto';
+import { Auth } from './entities/auth.entity';
+import { ResponseAPI } from './entities/response.entity';
 
 @Controller('auth')
 export class AuthController {
@@ -10,19 +12,19 @@ export class AuthController {
 
   @HttpCode(HttpStatus.OK)
   @Post('login')
-  signIn(@Body() signInDto: CreateAuthDto) {
+  signIn(@Body() signInDto: CreateAuthDto): Promise<Auth> {
     return this.authService.signIn(signInDto);
   }
 
   @HttpCode(HttpStatus.OK)
   @Post('register')
-  register(@Body() registerDTO: CreateUserDto) {
+  register(@Body() registerDTO: CreateUserDto): Promise<Auth> {
     return this.authService.register(registerDTO);
   }
 
   @HttpCode(HttpStatus.ACCEPTED)
   @Post('recovery')
-  recovery(@Body() json: UpdateAuthDto) {
+  recovery(@Body() json: UpdateAuthDto): Promise<ResponseAPI> {
     return this.authService.recoveryPassword(json.email);
   }
 

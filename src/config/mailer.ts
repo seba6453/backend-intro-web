@@ -14,5 +14,7 @@ export const transporter = nodemailer.createTransport({
 });
 
 transporter.verify().then(() => {
-    console.log("Listo para mandar emails")
-})
+    console.log("Listo para mandar emails");
+}).catch((error: Error) => {
+    console.error("Error al verificar el transporte:", error);
+});
