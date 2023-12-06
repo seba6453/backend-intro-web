@@ -36,7 +36,7 @@ export class UserService {
 
   async createUser(newUser: CreateUserDto): Promise<UserEntity> {
     newUser.password = await hashPassword(newUser.password);
-    const createdCat = await this.userModel.create(newUser);
+    const createdCat: UserEntity = await this.userModel.create(newUser);
     return createdCat;
   }
 
