@@ -3,9 +3,11 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { User } from '../schema/user.schema';
+import { UserEntity } from './entities/user.entity'
 import { UpdateUserDto } from './dto/update-user.dto';
 import { JwtService } from '@nestjs/jwt';
 import { hashPassword } from 'src/config/enctypt';
+import { DecodeToken } from 'src/entities/decodeToken.entity';
 
 
 @Injectable()
@@ -16,29 +18,29 @@ export class UserService {
   ) {}
 
 
-  async findOne(email: string) {
-    const user = await this.userModel.findOne({ email }, 'userName email');
+  async findOne(email: string): Promise<UserEntity> {
+    const user: UserEntity = await this.userModel.findOne({ email }, 'userName email');
     if (!user) {
       throw new HttpException('Usuario no existe en el sistema', HttpStatus.NOT_ACCEPTABLE);
     }
     return user;
   }
   
-  async findOneLogin(email: string) {
-    const user = await this.userModel.findOne({ email });
+  async findOneLogin(email: string): Promise<UserEntity> {
+    const user: UserEntity = await this.userModel.findOne({ email });
     if (!user) {
       throw new HttpException('Usuario no existe en el sistema', HttpStatus.NOT_ACCEPTABLE);
     }
     return user;
   }
 
-  async createUser(newUser: CreateUserDto) {
+  async createUser(newUser: CreateUserDto): Promise<UserEntity> {
     newUser.password = await hashPassword(newUser.password);
     const createdCat = await this.userModel.create(newUser);
     return createdCat;
   }
 
-  async forgotPassword(email: string, newPassword: string) {
+  async forgotPassword(email: string, newPassword: string): Promise<UserEntity> {
     // Buscar al usuario por su dirección de correo electrónico
     const user = await this.userModel.findOne({ email });
   
@@ -58,7 +60,7 @@ export class UserService {
     return user;
   }
 
-  async updateUser(token: string, updateUserDto: UpdateUserDto) {
+  async updateUser(token: string, updateUserDto: UpdateUserDto): Promise<UserEntity> {
     const decodedToken = this.jwtService.decode(token);
     if (!decodedToken || typeof decodedToken !== 'object') {
       throw new Error('Token inválido o no contiene información del usuario.');

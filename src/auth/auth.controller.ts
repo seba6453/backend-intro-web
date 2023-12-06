@@ -4,7 +4,7 @@ import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { CreateAuthDto } from './dto/create-auth.dto';
 import { UpdateAuthDto } from './dto/update-auth.dto';
 import { Auth } from './entities/auth.entity';
-import { ResponseAPI } from './entities/response.entity';
+import { ResponseAPI } from '../entities/response.entity';
 
 @Controller('auth')
 export class AuthController {

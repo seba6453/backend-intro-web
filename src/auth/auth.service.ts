@@ -2,13 +2,13 @@ import { HttpException, HttpStatus, Injectable  } from '@nestjs/common';
 import { UserService } from 'src/user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
-import { User } from 'src/user/entities/user.entity';
+import { UserEntity } from 'src/user/entities/user.entity';
 import { randomCaracter } from 'src/config/randomCaracter';
 import { transporter } from 'src/config/mailer';
 import { CreateAuthDto } from './dto/create-auth.dto';
 import { comparePasswords } from 'src/config/enctypt';
 import { Auth } from './entities/auth.entity';
-import { ResponseAPI } from './entities/response.entity';
+import { ResponseAPI } from '../entities/response.entity';
 
 @Injectable()
 export class AuthService {
@@ -33,7 +33,7 @@ export class AuthService {
   }
 
   async register(newUser: CreateUserDto): Promise<Auth> {
-    const user: User = await this.userService.createUser(newUser);
+    const user: UserEntity = await this.userService.createUser(newUser);
 
     const payload = { sub: user.userID, username: user.userName, email: user.email };
 
@@ -55,7 +55,7 @@ export class AuthService {
 
   async recoveryPassword(email: string): Promise<ResponseAPI> {
     const newPassword: string = randomCaracter(9);
-    let user: User;
+    let user: UserEntity;
     try {
       user = await this.userService.forgotPassword(email,newPassword);
     }catch{
